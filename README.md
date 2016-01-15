@@ -69,10 +69,7 @@ Available options and their defaults:
 
 ### Simple Example
 
-Let's say you want to train your GA to guess the password "secret4u". Your solution class only needs four parts:
-
-
-Your solution class might look like this:
+Let's say you want to train your GA to guess the password "secret4u". Your solution class might look like this:
 
 ```ruby
 class Password
@@ -122,10 +119,12 @@ Finally, our *to_s* method squishes all the guess letters together into one word
 Let's try it out by using the GA class:
 
 ```ruby
-possible_letters = Password::LETTER_POOL
-ga = GeneticAlgorithm.new 'ga/password', Password, [POSSIBLE_LETTERS]*8
+ga = GeneticAlgorithm.new 'ga/password', Password, [Password::LETTER_POOL]*8
 
 ```
+
+For the *ranges* parameter, we're passing an array which consists of eight copies of the LETTER_POOL
+array, since each password guess will have eight letters.
 
 Here's the abbreviated output, with columns for generation number, time, worst score, best score, and best solution. 
 Scores are based on percentage of total possible score:
