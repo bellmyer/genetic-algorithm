@@ -5,6 +5,12 @@
 class Multiple
   attr_reader :factors
   
+  class << self
+    def top_score
+      1_000_000
+    end
+  end
+  
   def initialize *params
     @factors = *params
   end
@@ -13,7 +19,7 @@ class Multiple
     factors.reduce(:*)
   end
   
-  def top_score
-    1_000_000
+  def to_s
+    factors.join(',')
   end
 end
