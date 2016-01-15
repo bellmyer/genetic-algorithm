@@ -126,34 +126,38 @@ ga = GeneticAlgorithm.new 'ga/password', Password, [Password::LETTER_POOL]*8
 For the *ranges* parameter, we're passing an array which consists of eight copies of the LETTER_POOL
 array, since each password guess will have eight letters.
 
-Here's the abbreviated output, with columns for generation number, time, worst score, best score, and best solution. 
-Scores are based on percentage of total possible score:
+Here's the entire output. Each row represents one generation with columns for generation number, 
+time, worst and best scores (as percentages), and best solution:
 
 ```
-0    00:00:00    0.0    0.25    shyp5tiv
-1    00:00:00    0.0    0.5    oeyhetau
-2    00:00:00    0.0    0.5    oeyhetau
-3    00:00:00    0.125    0.625    se4hetfu
-4    00:00:00    0.125    0.625    se4hetfu
-5    00:00:00    0.25    0.75    seopet4u
-6    00:00:00    0.25    0.75    seopet4u
-7    00:00:00    0.375    0.75    seopet4u
-8    00:00:00    0.375    0.75    seopet4u
-9    00:00:00    0.375    0.75    seopet4u
-10    00:00:00    0.5    0.75    seopet4u
+0     00:00:00    0.0      0.25     shyp5tiv
+1     00:00:00    0.0      0.5      oeyhetau
+2     00:00:00    0.0      0.5      oeyhetau
+3     00:00:00    0.125    0.625    se4hetfu
+4     00:00:00    0.125    0.625    se4hetfu
+5     00:00:00    0.25     0.75     seopet4u
+6     00:00:00    0.25     0.75     seopet4u
+7     00:00:00    0.375    0.75     seopet4u
+8     00:00:00    0.375    0.75     seopet4u
+9     00:00:00    0.375    0.75     seopet4u
+10    00:00:00    0.5      0.75     seopet4u
 11    00:00:00    0.375    0.875    secbet4u
-12    00:00:00    0.5    0.875    secbet4u
+12    00:00:00    0.5      0.875    secbet4u
 13    00:00:00    0.375    0.875    secbet4u
-14    00:00:00    0.5    0.875    secbet4u
-15    00:00:00    0.5    0.875    secbet4u
+14    00:00:00    0.5      0.875    secbet4u
+15    00:00:00    0.5      0.875    secbet4u
 16    00:00:00    0.625    0.875    secbet4u
-17    00:00:00    0.5    0.875    secbet4u
-18    00:00:00    0.5    0.875    secbet4u
+17    00:00:00    0.5      0.875    secbet4u
+18    00:00:00    0.5      0.875    secbet4u
 19    00:00:00    0.625    0.875    secbet4u
 20    00:00:00    0.625    0.875    secbet4u
 21    00:00:00    0.625    0.875    secbet4u
 22    00:00:00    0.625    0.875    secbet4u
-23    00:00:00    0.5    1.0    secret4u
+23    00:00:00    0.5      1.0      secret4u
 ```
+
+You can see that within a single second, over 23 generations, the GA gradually learned our password!
+Since each generation tried 50 possible solutions, the GA only had to try a total of 1,150 passwords. 
+That's amazing, since there were over 2.8 *trillion* possible combinations to try!
 
 More to come soon, but this should get you started! This password class is one of several examples in the *lib* directory.
