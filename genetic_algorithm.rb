@@ -1,18 +1,22 @@
+Dir[File.dirname(__FILE__) + '/lib/*.rb'].each{|f| require f} 
 require 'date'
 
 class GeneticAlgorithm
-  attr_reader :directory, :solution_class, :values, :options, :population, :generation, :total_score, :high_scores, :log_start, :log_file
+  attr_reader :directory, :solution_class, :values, :options, :population, :generation, :total_score, :log_start, :log_file
   
   DEFAULTS = {
     population_size: 50,
     generations: 50,
     mutation_rate: 0.05,
     holdover_rate: 0.1,
-    top_score: Float::INFINITY
+    top_score: nil,
+    display: 1,
+    verbose: false
   }
   
   def initialize directory, solution_class, ranges, options={}
     @options = DEFAULTS.merge(options)
+    @options[:top_score] ||= solution_class.top_score
 
     @directory = directory
     `mkdir -p #{directory}` unless File.exists?(directory)
@@ -21,7 +25,6 @@ class GeneticAlgorithm
     @solution_class = solution_class
     @values = ranges.map(&:to_a)
     @generation = 0
-    @high_scores = []
     
     init_log
     create_population
@@ -35,16 +38,12 @@ class GeneticAlgorithm
   def run
     @log_start = Time.now
     
-    while generation < options[:generations] && high_scores.last < options[:top_score] do
-      log_generation
-
-      best = population_by_fitness.first
-      break if best[:score] == best[:top_score]
-      
+    while generation < options[:generations] && best[:score] < options[:top_score] do
+      break if best[:score] >= options[:top_score]
       regenerate_population
     end
     
-    high_scores.last
+    best[:score]
   end
 
   def init_log
@@ -59,12 +58,14 @@ class GeneticAlgorithm
   end
   
   def log_generation
-    stamp = DateTime.strptime((Time.now - log_start).to_s, '%s').strftime('%H:%M:%S')
-    best = population_by_fitness.first
-    worst = population_by_fitness.last
-    progress = (best[:score].to_f / best[:top_score].to_f).round(4)
+    return unless (generation % options[:display]) == 0
     
-    results = ([generation, stamp, worst[:score], best[:score], best[:top_score], progress] + best[:params].map{|x| x.round(4)})
+    stamp = DateTime.strptime((Time.now - log_start).to_s, '%s').strftime('%H:%M:%S')
+
+    best_percent = (best[:score].to_f / options[:top_score].to_f).round(4)
+    worst_percent = (worst[:score].to_f / options[:top_score].to_f).round(4)
+    
+    results = [generation, stamp, worst_percent, best_percent, best[:display]]
 
     log_file.puts results.join(',')
     log_file.flush
@@ -88,6 +89,8 @@ class GeneticAlgorithm
     new_population = holdovers
     
     while new_population.size < options[:population_size] do
+      puts "building #{new_population.size}:" if options[:verbose]
+      
       params = (0...values.size).map{|i| mutate? ? select_random(values[i]) : select_by_fitness(i)}
       new_population << create_individual(params)
     end
@@ -108,36 +111,39 @@ class GeneticAlgorithm
     population_by_fitness[0,holdover_count]
   end
   
-  def select_by_fitness_aggressive param_index
-    low_score = population_by_fitness.last[:score]
+  def select_by_fitness param_index
+    low_score = worst[:score]
     picked = rand(total_score - (low_score * population.size))
+    
+    puts "    #{picked[:display]}[#{param_index}]" if options[:verbose]
 
     population.detect{ |i| (picked -= i[:score] - low_score) <= 0 }[:params][param_index]
   end
   
-  alias_method :select_by_fitness, :select_by_fitness_aggressive
-  
-  def select_by_fitness_moderate param_index
-    picked = rand(total_score)
-    population.detect{ |i| (picked -= i[:score]) <= 0 }[:params][param_index]
-  end
-  
   def create_individual params
     individual = solution_class.new(*params)
-    {params: params, score: individual.score, top_score: individual.top_score}
+    {params: params, score: individual.score, display: individual.to_s}
   end
   
   def save
-    @high_scores << population.map{|i| i[:score]}.max
-    
     File.open(sprintf("%s/%06d.ga", directory, generation), 'wb') do |f|
       f.write Marshal.dump(population_by_fitness)
     end
+    
+    log_generation
     
     @generation += 1
   end
   
   def select_random list
     list[rand(list.size)]
+  end
+  
+  def best
+    population_by_fitness.first
+  end
+  
+  def worst
+    population_by_fitness.last
   end
 end

@@ -2,7 +2,7 @@
 # all the numbers it was given upon initialization. The top score is arbitrary
 # in this case.
 
-class GeneticAlgorithm::Multiple
+class Multiple
   attr_reader :factors
   
   def initialize *params
@@ -10,8 +10,7 @@ class GeneticAlgorithm::Multiple
   end
   
   def score
-    return @score if defined?(@score)
-    @score = factors.reduce(:*)
+    factors.reduce(:*)
   end
   
   def top_score
