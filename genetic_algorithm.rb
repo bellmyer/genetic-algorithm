@@ -100,7 +100,7 @@ class GeneticAlgorithm
   end
   
   def mutate?
-    rand(options[:mutation_rate] * 10_000) < 10_000
+    rand < options[:mutation_rate]
   end
   
   def holdovers
