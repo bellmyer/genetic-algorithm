@@ -6,7 +6,7 @@ class GeneticAlgorithm
   
   DEFAULTS = {
     population_size: 50,
-    generations: 50,
+    generations: 1000,
     mutation_rate: 0.05,
     holdover_rate: 0.1,
     top_score: nil,

@@ -20,6 +20,6 @@ class Multiple
   end
   
   def to_s
-    factors.join(',')
+    factors.map{|f| f.round(4)}.join(',')
   end
 end

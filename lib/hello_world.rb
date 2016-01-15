@@ -1,10 +1,13 @@
 class HelloWorld
   attr_reader :target, :letters
   
-  LETTER_POOL = ('a'..'z').to_a + [' ']
+  LETTER_POOL = (
+    ('a'..'z').to_a +
+    ('A'..'Z').to_a +
+    '!?.,-_ '.split('')
+  )
   
-  
-  TARGET = "hello world"
+  TARGET = "Hello, World!"
   
   class << self
     def top_score
